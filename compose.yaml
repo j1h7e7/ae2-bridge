@@ -1,0 +1,24 @@
+services:
+  web:
+    build: .
+    ports:
+     - '8000:8000'
+    volumes:
+     - './app:/app'
+    depends_on:
+      timescaledb:
+        condition: service_healthy
+
+  timescaledb:
+    image: timescale/timescaledb-ha:pg17
+    ports:
+      - '5432:5432'
+    environment:
+      - POSTGRES_PASSWORD=password
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U postgres -d postgres://postgres:password@localhost/postgres"]
+      interval: 2s
+      retries: 5
+      start_period: 10s
+      timeout: 5s
+    
