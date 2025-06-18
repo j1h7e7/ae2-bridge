@@ -1,11 +1,11 @@
 from flask import Flask
 
-from app.db.access import db
+from app.config import CONFIG
+from app.db.base import db
+from app.db.manifest import *  # noqa: F403
 
 app = Flask(__name__)
-app.config["SQLALCHEMY_DATABASE_URI"] = (
-    "postgresql+psycopg2://postgres:password@timescaledb/postgres"
-)
+app.config["SQLALCHEMY_DATABASE_URI"] = CONFIG.db_url
 db.init_app(app)
 
 

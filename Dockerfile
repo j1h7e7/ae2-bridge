@@ -7,5 +7,4 @@ EXPOSE 8000
 ADD pyproject.toml uv.lock /
 RUN uv sync
 
-ENTRYPOINT [ "uv", "run" ]
-CMD [ "gunicorn", "app.app:app", "--reload" ]
+ENTRYPOINT [ "/app/entrypoint.sh" ]
