@@ -4,7 +4,7 @@ from alembic import context
 from sqlalchemy import engine_from_config, pool
 
 from app.config import CONFIG
-from app.db.base import BaseORM
+from app.data.base import BaseORM
 
 config = context.config
 if config.config_file_name is not None:
@@ -17,6 +17,15 @@ config.set_main_option(
 )
 
 
+def exclude_by_name(name, type_, parent_names):
+    # needed for timescaledb
+    exclude_indexes = {"itemcount_time_idx"}
+    if type_ == "index":
+        return name not in exclude_indexes
+    else:
+        return True
+
+
 def run_migrations_offline() -> None:
     url = config.get_main_option("sqlalchemy.url")
     context.configure(
@@ -24,6 +33,7 @@ def run_migrations_offline() -> None:
         target_metadata=target_metadata,
         literal_binds=True,
         dialect_opts={"paramstyle": "named"},
+        include_name=exclude_by_name,
     )
 
     with context.begin_transaction():
@@ -38,7 +48,11 @@ def run_migrations_online() -> None:
     )
 
     with connectable.connect() as connection:
-        context.configure(connection=connection, target_metadata=target_metadata)
+        context.configure(
+            connection=connection,
+            target_metadata=target_metadata,
+            include_name=exclude_by_name,
+        )
 
         with context.begin_transaction():
             context.run_migrations()

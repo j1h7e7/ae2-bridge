@@ -1,6 +1,4 @@
-def main():
-    print("Hello from ae2-bridge!")
+import app.data.manifest as manifest  # noqa: F401
+from app.app import create_app
 
-
-if __name__ == "__main__":
-    main()
+flask_app = create_app()

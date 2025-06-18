@@ -2,7 +2,7 @@ import datetime
 
 from sqlalchemy.orm import Mapped, mapped_column
 
-from app.db.base import BaseORM, db
+from app.data.base import BaseORM, db
 
 
 class ItemCount(BaseORM):

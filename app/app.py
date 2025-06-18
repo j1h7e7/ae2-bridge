@@ -1,20 +1,16 @@
 from flask import Flask
 
+import app.data.manifest as manifest  # noqa: F401
 from app.config import CONFIG
-from app.db.base import db
-from app.db.manifest import *  # noqa: F403
-
-app = Flask(__name__)
-app.config["SQLALCHEMY_DATABASE_URI"] = CONFIG.db_url
-db.init_app(app)
+from app.data.base import db
+from app.routes import main
 
 
-@app.route("/")
-def hello():
-    return "Hello world!"
+def create_app() -> Flask:
+    flask_app = Flask(__name__)
+    flask_app.config["SQLALCHEMY_DATABASE_URI"] = CONFIG.db_url
+    db.init_app(flask_app)
 
+    flask_app.register_blueprint(main)
 
-@app.route("/test")
-def test():
-    thing = db.session.execute(db.session.query(1))
-    return f"test {thing}"
+    return flask_app

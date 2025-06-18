@@ -8,10 +8,16 @@ class Config(BaseSettings):
     postgres_user: str = "postgres"
     postgres_password: str = "password"
 
+    env: str = "prod"
+
     @computed_field
     @property
     def db_url(self) -> str:
-        return f"postgresql+psycopg2://{self.postgres_user}:{self.postgres_password}@timescaledb/postgres"
+        if self.env == "prod":
+            return f"postgresql+psycopg2://{self.postgres_user}:{self.postgres_password}@timescaledb/postgres"
+        elif self.env == "test":
+            return "sqlite://"
+        raise ValueError
 
 
 CONFIG = Config()

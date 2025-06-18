@@ -6,4 +6,4 @@ class BaseORM(DeclarativeBase):
     pass
 
 
-db = SQLAlchemy(model_class=BaseORM)
+db: SQLAlchemy = SQLAlchemy(model_class=BaseORM)

@@ -5,6 +5,8 @@ ENV PORT=8000
 EXPOSE 8000
 
 ADD pyproject.toml uv.lock /
-RUN uv sync
+RUN uv sync --no-dev
 
-ENTRYPOINT [ "/app/entrypoint.sh" ]
+ADD main.py run_app.sh /
+
+ENTRYPOINT [ "/run_app.sh" ]
