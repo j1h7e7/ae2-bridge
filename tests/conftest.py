@@ -8,7 +8,7 @@ from app.data.base import db as _db
 
 @pytest.fixture(scope="session", autouse=True)
 def _config():
-    CONFIG.env = "test"
+    CONFIG.db_url = "sqlite://"
 
 
 @pytest.fixture(scope="session")
@@ -25,7 +25,7 @@ def app_ctx(flask_app: Flask):
 
 
 @pytest.fixture(scope="session")
-def db(flask_app: Flask, app_ctx: None):
+def db(app_ctx: None):
     _db.create_all()
     yield _db
     _db.drop_all()

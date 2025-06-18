@@ -3,7 +3,8 @@ from logging.config import fileConfig
 from alembic import context
 from sqlalchemy import engine_from_config, pool
 
-from app.config import CONFIG
+import app.data.manifest  # noqa: F401 # loads all models
+from app.config import get_db_url
 from app.data.base import BaseORM
 
 config = context.config
@@ -11,10 +12,7 @@ if config.config_file_name is not None:
     fileConfig(config.config_file_name)
 
 target_metadata = BaseORM.metadata
-config.set_main_option(
-    "sqlalchemy.url",
-    f"postgresql+psycopg2://{CONFIG.postgres_user}:{CONFIG.postgres_password}@localhost/postgres",
-)
+config.set_main_option("sqlalchemy.url", get_db_url())
 
 
 def exclude_by_name(name, type_, parent_names):

@@ -7,6 +7,8 @@ EXPOSE 8000
 ADD pyproject.toml uv.lock /
 RUN uv sync --no-dev
 
+ADD alembic.ini /
+ADD migrations migrations
 ADD main.py run_app.sh /
 
 ENTRYPOINT [ "/run_app.sh" ]

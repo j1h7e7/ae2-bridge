@@ -7,17 +7,6 @@ from app.data.models import ItemCount
 main = Blueprint("main", __name__)
 
 
-@main.route("/")
-def hello():
-    return "Hello world!"
-
-
-@main.route("/test")
-def test():
-    thing = db.session.execute(db.session.query(1))
-    return f"test {thing}"
-
-
 @main.route("/insert")
 def add_entry():
     count = ItemCount(item_name="test item", item_count=1, time=None)
