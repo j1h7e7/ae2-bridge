@@ -3,7 +3,7 @@ import datetime
 from sqlalchemy.orm import Query
 
 from app.data.base import db
-from app.data.models import ItemCount
+from db.models import ItemCount
 
 
 def create_item_count(

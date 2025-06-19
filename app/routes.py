@@ -2,7 +2,7 @@ from flask import Blueprint
 from sqlalchemy import select
 
 from app.data.base import db
-from app.data.models import ItemCount
+from db.models import ItemCount
 
 main = Blueprint("main", __name__)
 
