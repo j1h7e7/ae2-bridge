@@ -2,7 +2,7 @@ import datetime
 
 from sqlalchemy.orm import Query, Session
 
-from db.models import ItemCount
+from common.models import ItemCount
 
 
 def create_item_count(

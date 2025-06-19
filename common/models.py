@@ -3,7 +3,7 @@ import datetime
 from sqlalchemy import DateTime, Integer, Text, func
 from sqlalchemy.orm import Mapped, mapped_column
 
-from db.base import BaseORM
+from common.base import BaseORM
 
 
 class ItemCount(BaseORM):

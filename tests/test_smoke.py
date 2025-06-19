@@ -3,7 +3,7 @@ import uuid
 from flask.testing import FlaskClient
 from flask_sqlalchemy import SQLAlchemy
 
-from db.models import ItemCount
+from common.models import ItemCount
 
 
 def test_db_access(db: SQLAlchemy):

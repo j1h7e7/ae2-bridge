@@ -1,7 +1,7 @@
 from flask import Blueprint
 
 from app.db import db
-from db import dao
+from common import dao
 
 main = Blueprint("main", __name__)
 

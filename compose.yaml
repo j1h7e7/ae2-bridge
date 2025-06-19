@@ -5,7 +5,7 @@ services:
      - '8000:8000'
     volumes:
      - './app:/app'
-     - './db:/db'
+     - './common:/common'
     env_file: .env
     environment:
       - DB_URL=postgresql+psycopg2://${POSTGRES_USERNAME}:${POSTGRES_PASSWORD}@timescaledb/postgres
