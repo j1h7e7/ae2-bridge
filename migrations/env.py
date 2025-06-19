@@ -5,7 +5,7 @@ from sqlalchemy import engine_from_config, pool
 
 import db.manifest  # noqa: F401 # loads all models
 from app.config import get_db_url
-from app.data.base import BaseORM
+from db.base import BaseORM
 
 config = context.config
 if config.config_file_name is not None:

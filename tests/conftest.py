@@ -5,7 +5,7 @@ from flask_socketio import SocketIO, SocketIOTestClient
 
 from app.app import create_app
 from app.config import CONFIG
-from app.data.base import db as _db
+from app.db import db as _db
 
 
 @pytest.fixture(scope="session", autouse=True)

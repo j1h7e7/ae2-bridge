@@ -3,7 +3,7 @@ from flask_socketio import send
 
 import db.manifest as manifest  # noqa: F401
 from app.config import get_db_url
-from app.data.base import db
+from app.db import db
 from app.routes import main
 from app.socket import socketio
 
