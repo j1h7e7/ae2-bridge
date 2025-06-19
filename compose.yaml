@@ -6,6 +6,8 @@ services:
     volumes:
      - './app:/app'
     env_file: .env
+    environment:
+      - DB_URL=postgresql+psycopg2://${POSTGRES_USERNAME}:${POSTGRES_PASSWORD}@timescaledb/postgres
     depends_on:
       timescaledb:
         condition: service_healthy
