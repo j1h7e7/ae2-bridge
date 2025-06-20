@@ -1,17 +1,26 @@
 services:
-  web:
-    build: .
+  flask:
+    build:
+      target: flask
     ports:
      - '8000:8000'
     volumes:
      - './app:/app'
-     - './common:/common'
-    env_file: .env
-    environment:
-      - DB_URL=postgresql+psycopg2://${POSTGRES_USERNAME}:${POSTGRES_PASSWORD}@timescaledb/postgres
-    depends_on:
-      timescaledb:
-        condition: service_healthy
+    extends:
+      file: common_services.yaml
+      service: common
+
+  socket:
+    build:
+      target: socket
+    ports:
+      - '9999:9999'
+    volumes:
+     - './sockets:/sockets'
+    extends:
+      file: common_services.yaml
+      service: common
+
 
   timescaledb:
     image: timescale/timescaledb-ha:pg17

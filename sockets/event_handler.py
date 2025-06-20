@@ -69,6 +69,7 @@ class EventHandler:
         self.req.send(bytes_data)
 
     def handle_single_event(self, payload: EventPayload):
+        logger.info(f"Handling event {payload=}")
         event_name = payload.event_type
         event_data = payload.data
         callback = self.callbacks.get(event_name, self.default_callback)

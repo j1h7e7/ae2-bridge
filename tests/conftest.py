@@ -49,6 +49,7 @@ def socket_app():
     PORT = 9999
 
     with socketserver.ThreadingTCPServer((HOST, PORT), SocketApp) as server:
+        server.daemon_threads = True
         thread = threading.Thread(target=server.serve_forever, daemon=True)
         thread.start()
         yield (HOST, PORT)
