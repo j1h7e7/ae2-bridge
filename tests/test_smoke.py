@@ -1,3 +1,5 @@
+import json
+import socket
 import uuid
 
 from flask.testing import FlaskClient
@@ -20,3 +22,11 @@ def test_api_access(client: FlaskClient):
 
     resp = client.get("/_should_never_exist")
     assert resp.status_code == 404
+
+
+def test_socket(socket_client: socket.socket):
+    socket_client.send(
+        json.dumps({"event_type": "test", "data": "hello"}).encode() + b"\n"
+    )
+    resp = socket_client.recv(1024)
+    assert resp == b"Hello\n"
