@@ -1,20 +1,16 @@
+import inspect
 import logging
 import socket
 import socketserver
 import time
-from typing import Callable
+from typing import Callable, Type
 
-from pydantic import BaseModel
+from sockets.event_types import BaseEventPayload, EventPayload
 
-CallbackType = Callable[[str], str | None]
+CallbackType = Callable[[EventPayload], str | None]
 
 
 logger = logging.getLogger(__name__)
-
-
-class EventPayload(BaseModel):
-    event_type: str
-    data: str | None = None
 
 
 class SizedBufferWrapper:
@@ -35,14 +31,17 @@ class SizedBufferWrapper:
         self.buf.extend(inpt)
 
 
-class EventHandler:
-    def __init__(self):
-        self.callbacks: dict[str, CallbackType] = {}
+class EventHandlerInstance:
+    def __init__(
+        self,
+        req_handler: socketserver.BaseRequestHandler,
+        callbacks: dict[str, CallbackType],
+    ):
+        self.callbacks: dict[str, CallbackType] = callbacks
         self.default_callback: CallbackType | None = None
         self.buffer = SizedBufferWrapper()
 
-        # TODO: this is a hack
-        self.req_handler: socketserver.BaseRequestHandler | None = None
+        self.req_handler = req_handler
 
         self.closed = False
         self.callbacks["close"] = lambda _: self.close()
@@ -57,25 +56,17 @@ class EventHandler:
         logger.info(f"Closing socket {self.req_handler}")
         self.closed = True
 
-    def register(self, event_name: str) -> Callable[[CallbackType], CallbackType]:
-        def _decorator(fn: CallbackType):
-            self.callbacks[event_name] = fn
-            return fn
-
-        return _decorator
-
     def emit(self, data: str, /, *, newline: bool = True) -> None:
         bytes_data = bytes(data, encoding="utf-8") + b"\n" if newline else b""
         self.req.send(bytes_data)
 
-    def handle_single_event(self, payload: EventPayload):
+    def handle_single_event(self, payload: BaseEventPayload):
         logger.info(f"Handling event {payload=}")
         event_name = payload.event_type
-        event_data = payload.data
         callback = self.callbacks.get(event_name, self.default_callback)
         if not callback:
             raise ValueError(f"No callback for event {event_name}")
-        output = callback(event_data)
+        output = callback(payload)
         if output is not None:
             self.emit(output)
 
@@ -91,5 +82,38 @@ class EventHandler:
             self._fill_buffer()
             while line := self.buffer.readline():
                 payload = EventPayload.model_validate_json(line)
-                self.handle_single_event(payload)
+                self.handle_single_event(payload.root)
             time.sleep(0.1)
+
+
+class EventHandlerManager:
+    def __init__(self):
+        self.callbacks: dict[str, CallbackType] = {}
+
+    @staticmethod
+    def _get_event_type(fn: CallbackType) -> str:
+        argspec = inspect.getfullargspec(fn)
+        payload_type: Type[BaseEventPayload] = argspec.annotations["payload"]
+        event_type: type = payload_type.model_fields["event_type"].annotation
+        return event_type.__args__[0]  # cursed
+
+    def register(
+        self, arg: str | CallbackType | None = None
+    ) -> Callable[[CallbackType], CallbackType]:
+        event_name: str | None = None
+
+        def _decorator(fn: CallbackType):
+            event_name2: str = event_name or self._get_event_type(fn)
+            self.callbacks[event_name2] = fn
+            return fn
+
+        if callable(arg):
+            return _decorator(arg)
+        else:
+            event_name = arg
+            return _decorator
+
+    def new_instance(
+        self, req_handler: socketserver.BaseRequestHandler
+    ) -> EventHandlerInstance:
+        return EventHandlerInstance(req_handler=req_handler, callbacks=self.callbacks)
