@@ -1,0 +1,9 @@
+docker build -t oc .
+docker run -it oc   
+lua
+dofile("boot2.lua")
+co=boot_computer()
+coroutine.resume(co)
+coroutine.resume(co)
+coroutine.resume(co)
+coroutine.resume(co)

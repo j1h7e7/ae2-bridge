@@ -138,9 +138,7 @@ function boot()
     })
 
     math.randomseed(0)
-
     require("main2")
-    print('booted')
 end
 
 boot()

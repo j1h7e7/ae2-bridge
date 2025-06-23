@@ -14,8 +14,9 @@ ADD https://github.com/MightyPirates/OpenComputers.git#:src/main/resources/asset
 ADD https://github.com/MightyPirates/OpenComputers.git#:src/main/resources/assets/opencomputers/loot /OCEmu/src/loot
 ADD https://raw.githubusercontent.com/MightyPirates/OpenComputers/refs/heads/master-MC1.7.10/src/main/resources/assets/opencomputers/font.hex /OCEmu/src
 
-ADD ./go.lua ./elsa.lua ./boot2.lua ./main2.lua /OCEmu/src/
+ADD ./boot2.lua ./main2.lua /OCEmu/src/
 ADD ./ocemu.cfg /root/.ocemu/
+ADD ./init.lua ./autorun.lua /OCEmu/src/loot/openos/
 
 WORKDIR /OCEmu/src/
 ENTRYPOINT [ "/bin/sh" ]
