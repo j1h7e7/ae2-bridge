@@ -10,54 +10,7 @@ local lfs = require("lfs")
 local arg_parse = require("support.arg_parse")
 
 local args, options = arg_parse(...)
-local baseDir
-
-local getenv = setmetatable({}, {
-    __index = function(t, k)
-        local v = os.getenv(k)
-        t[k] = v
-        return v
-    end
-})
-local paths = {}
-
-if options.basedir then
-    table.insert(paths, options.basedir)
-else -- Assume Linux
-    if getenv["HOME"] then
-        table.insert(paths, getenv["HOME"] .. "/.ocemu")
-    end
-end
-
-if #paths == 0 then
-    table.insert(paths, lfs.currentdir() .. "/data")
-end
-for i = 1, #paths do
-    if lfs.attributes(paths[i], "mode") ~= nil then
-        baseDir = paths[i]
-        break
-    end
-end
-
-local preferred = paths[#paths]
-if not baseDir then
-    baseDir = preferred
-end
-
-local baseDirType = lfs.attributes(baseDir, "mode")
-if baseDirType ~= nil and baseDirType ~= "directory" then
-    error("Emulation storage location '" .. baseDir .. "' is not a directory", 0)
-elseif baseDirType == "nil" then
-    local ok, err = lfs.mkdir(baseDir)
-    if not ok then
-        error("Failed to create directory '" .. baseDir .. "':" .. err, 0)
-    end
-end
-
-if baseDir ~= preferred then
-    print("Warning: Using legacy path of '" .. baseDir .. "'")
-    print("Please move this to '" .. preferred .. "'")
-end
+local baseDir = os.getenv("HOME") .. "/.ocemu"
 
 function boot()
     local wen = {}
@@ -189,3 +142,5 @@ function boot()
     require("main2")
     print('booted')
 end
+
+boot()
