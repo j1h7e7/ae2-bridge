@@ -4,13 +4,9 @@ if package.cpath:find(".dll", nil, true) then
     package.path = ".\\extras\\?\\init.lua;.\\extras\\?.lua;" .. package.path
 end
 
-local function b(a) return a ~= 0 end
 local ffi = require("ffi")
 local SDL = require("sdl2.init")
 local lfs = require("lfs")
-
-local sdlinit = false
-
 local arg_parse = require("support.arg_parse")
 
 local args, options = arg_parse(...)
@@ -27,29 +23,12 @@ local paths = {}
 
 if options.basedir then
     table.insert(paths, options.basedir)
-elseif ffi.os == 'Windows' then
-    if getenv["HOME"] then -- Unlikely but possible thanks to the old code.
-        table.insert(paths, getenv["HOME"] .. "\\.ocemu")
-    end
-    if getenv["APPDATA"] then
-        table.insert(paths, getenv["APPDATA"] .. "\\.ocemu")
-        table.insert(paths, getenv["APPDATA"] .. "\\OCEmu")
-    end
 else -- Assume Linux
     if getenv["HOME"] then
         table.insert(paths, getenv["HOME"] .. "/.ocemu")
     end
-    if getenv["XDG_CONFIG_HOME"] then
-        table.insert(paths, getenv["XDG_CONFIG_HOME"] .. "/ocemu")
-    elseif getenv["HOME"] and lfs.attributes(getenv["HOME"] .. "/.config", "mode") == "directory" then
-        table.insert(paths, getenv["HOME"] .. "/.config/ocemu")
-    end
-    if getenv["XDG_DATA_HOME"] then
-        table.insert(paths, getenv["XDG_DATA_HOME"] .. "/ocemu")
-    elseif getenv["HOME"] and lfs.attributes(getenv["HOME"] .. "/.local/share", "mode") == "directory" then
-        table.insert(paths, getenv["HOME"] .. "/.local/share/ocemu")
-    end
 end
+
 if #paths == 0 then
     table.insert(paths, lfs.currentdir() .. "/data")
 end
@@ -81,62 +60,6 @@ if baseDir ~= preferred then
 end
 
 function boot()
-    -- local ret, err = not b(SDL.init(SDL.INIT_AUDIO + SDL.INIT_EVENTS + SDL.INIT_VIDEO))
-
-    -- if not ret then
-    -- 	error(ffi.string(SDL.getError))
-    -- end
-    sdlinit = true
-
-    local eventNames = {
-        [SDL.FIRSTEVENT] = "firstevent",
-        [SDL.QUIT] = "quit",
-        [SDL.APP_TERMINATING] = "app_terminating",
-        [SDL.APP_LOWMEMORY] = "app_lowmemory",
-        [SDL.APP_WILLENTERBACKGROUND] = "app_willenterbackground",
-        [SDL.APP_DIDENTERBACKGROUND] = "app_didenterbackground",
-        [SDL.APP_WILLENTERFOREGROUND] = "app_willenterforeground",
-        [SDL.APP_DIDENTERFOREGROUND] = "app_didenterforeground",
-        [SDL.WINDOWEVENT] = "windowevent",
-        [SDL.SYSWMEVENT] = "syswmevent",
-        [SDL.KEYDOWN] = "keydown",
-        [SDL.KEYUP] = "keyup",
-        [SDL.TEXTEDITING] = "textediting",
-        [SDL.TEXTINPUT] = "textinput",
-        [SDL.MOUSEMOTION] = "mousemotion",
-        [SDL.MOUSEBUTTONDOWN] = "mousebuttondown",
-        [SDL.MOUSEBUTTONUP] = "mousebuttonup",
-        [SDL.MOUSEWHEEL] = "mousewheel",
-        [SDL.JOYAXISMOTION] = "joyaxismotion",
-        [SDL.JOYBALLMOTION] = "joyballmotion",
-        [SDL.JOYHATMOTION] = "joyhatmotion",
-        [SDL.JOYBUTTONDOWN] = "joybuttondown",
-        [SDL.JOYBUTTONUP] = "joybuttonup",
-        [SDL.JOYDEVICEADDED] = "joydeviceadded",
-        [SDL.JOYDEVICEREMOVED] = "joydeviceremoved",
-        [SDL.CONTROLLERAXISMOTION] = "controlleraxismotion",
-        [SDL.CONTROLLERBUTTONDOWN] = "controllerbuttondown",
-        [SDL.CONTROLLERBUTTONUP] = "controllerbuttonup",
-        [SDL.CONTROLLERDEVICEADDED] = "controllerdeviceadded",
-        [SDL.CONTROLLERDEVICEREMOVED] = "controllerdeviceremoved",
-        [SDL.CONTROLLERDEVICEREMAPPED] = "controllerdeviceremapped",
-        [SDL.FINGERDOWN] = "fingerdown",
-        [SDL.FINGERUP] = "fingerup",
-        [SDL.FINGERMOTION] = "fingermotion",
-        [SDL.DOLLARGESTURE] = "dollargesture",
-        [SDL.DOLLARRECORD] = "dollarrecord",
-        [SDL.MULTIGESTURE] = "multigesture",
-        [SDL.CLIPBOARDUPDATE] = "clipboardupdate",
-        [SDL.DROPFILE] = "dropfile",
-        [SDL.DROPTEXT] = "droptext",
-        [SDL.DROPBEGIN] = "dropbegin",
-        [SDL.DROPCOMPLETE] = "dropcomplete",
-        [SDL.AUDIODEVICEADDED] = "audiodeviceadded",
-        [SDL.AUDIODEVICEREMOVED] = "audiodeviceremoved",
-        [SDL.RENDER_TARGETS_RESET] = "render_targets_reset",
-        [SDL.RENDER_DEVICE_RESET] = "render_device_reset",
-    }
-
     local wen = {}
     for k, v in pairs(SDL) do
         if k:sub(1, 12) == "WINDOWEVENT_" then
@@ -239,7 +162,6 @@ function boot()
         SDL = SDL,
         windowEventID = wen,
     }
-
     local handlers = elsa.handlers
 
     setmetatable(elsa, {
@@ -262,77 +184,8 @@ function boot()
         end
     })
 
-    -- redirect os.remove is non posix
-    if ffi.os == 'Windows' then
-        local os_remove = os.remove
-        os.remove = function(path)
-            local mode = lfs.attributes(path, "mode")
-            if mode == nil then
-                return false
-            elseif mode == "directory" then
-                return lfs.rmdir(path)
-            else -- remove file
-                return os_remove(path)
-            end
-        end
-    end
-
-    -- seed randomizer
-    math.randomseed(os.time())
+    math.randomseed(0)
 
     require("main2")
-    print('lololol')
-
-    local e = ffi.new('SDL_Event')
-    -- while true do
-    --     local start = SDL.getTicks()
-    --     while b(SDL.pollEvent(e)) do
-    --         local event = e
-    --         local etype = eventNames[event.type]
-    --         if etype == nil then
-    --             print("Ignoring event of ID: " .. event.type)
-    --             goto econtinue
-    --         end
-    --         if etype == "windowevent" then
-    --             event = ffi.cast("SDL_WindowEvent*", event)
-    --             if wen[event.event] == nil then
-    --                 print("Ignoring window event of kind: " .. event.event)
-    --                 goto econtinue
-    --             end
-    --             etype = "window" .. wen[event.event]
-    --         end
-    --         if handlers[etype] ~= nil then
-    --             local hndtbl = handlers[etype]
-    --             for i = 1, #hndtbl do
-    --                 hndtbl[i](event)
-    --             end
-    --         end
-    --         if etype == "quit" then
-    --             return
-    --         end
-    --         ::econtinue::
-    --     end
-    --     local updtbl = handlers.update
-    --     for i = 1, #updtbl do
-    --         updtbl[i]()
-    --     end
-    --     if handlers.draw then
-    --         local drawtbl = handlers.draw
-    --         for i = 1, #drawtbl do
-    --             drawtbl[i]()
-    --         end
-    --     end
-
-    --     if settings.fast then
-    --         SDL.delay(16)
-    --     else
-    --         SDL.delay(math.max(start + (1000 / 20) - SDL.getTicks(), 1))
-    --     end
-    -- end
+    print('booted')
 end
-
--- local err = select(2, xpcall(boot, debug.traceback))
--- if sdlinit then
---     if err and #err > 0 then SDL.showSimpleMessageBox(SDL.MESSAGEBOX_ERROR, "OCEmu", err, nil) end
---     SDL.quit()
--- end

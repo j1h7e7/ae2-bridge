@@ -1,8 +1,5 @@
-if love ~= nil then
-    print("OCEmu is not a Love2D application")
-    os.exit()
-elseif elsa == nil then
-    print("Launch boot.lua and not main.lua")
+if elsa == nil then
+    print("Launch boot2.lua and not main2.lua")
     return
 end
 
@@ -113,21 +110,6 @@ if elsa.opts.help then
     os.exit()
 end
 
---[[local memoryUsages = {}
-
-local profilerHook = function(event)
-	local func = debug.getinfo(2)
-	if func == nil then return end
-	local name = func.name
-	if name ~= nil then
-		if event == "call" or event == "tail call" then
-			memoryUsages[name] = collectgarbage("count")
-		elseif event == "return" then
-			memoryUsages[name] = collectgarbage("count") - memoryUsages[name]
-		end
-	end
-end]]
-
 local maxCallBudget = (1.5 + 1.5 + 1.5) / 3 -- T3 CPU and 2 T3+ memory
 
 machine = {
@@ -136,7 +118,7 @@ machine = {
     signals = {},
     totalMemory = 2 * 1024 * 1024,
     insynccall = false,
-    callBudget = 10000,
+    callBudget = maxCallBudget,
 }
 
 function machine.consumeCallBudget(callCost)
@@ -150,59 +132,8 @@ function machine.consumeCallBudget(callCost)
     return true
 end
 
-if not machine.beep and settings.beepVolume <= 0 then
-    function machine.beep(frequency, duration)
-        cprint("BEEP (Silent)", frequency, duration)
-    end
-end
-if not machine.beep and elsa.SDL then
-    local desired = ffi.new("SDL_AudioSpec",
-        { freq = settings.beepSampleRate, format = elsa.SDL.AUDIO_U8, channels = 1, samples = 4096, callback = ffi.NULL })
-    local obtained = ffi.new("SDL_AudioSpec", {})
-    local dev = elsa.SDL.openAudioDevice(ffi.NULL, 0, desired, obtained, 0)
-    if dev == 0 then
-        print(elsa.getError())
-    else
-        local same = true
-        for k, v in pairs({ "freq", "format", "channels" }) do
-            if desired[v] ~= obtained[v] then
-                same = false
-                print(v .. ") " .. desired[v] .. " -> " .. obtained[v])
-            end
-        end
-        if same then
-            elsa.SDL.pauseAudioDevice(dev, 0)
-            local datatype = ffi.typeof("int8_t[?]")
-            local rate = tonumber(obtained.freq)
-            local vol = settings.beepVolume
-            local offset = 0
-            function machine.beep(frequency, duration)
-                local step = frequency / rate
-                local sampleCount = math.floor(duration * rate / 1000)
-                local data = datatype(sampleCount)
-                for i = 1, sampleCount do
-                    data[i - 1] = bit32.bxor(offset < 0.5 and vol or -vol, 0x80)
-                    offset = (offset + step) % 1
-                end
-                if elsa.SDL.queueAudio(dev, data, sampleCount) ~= 0 then
-                    error(elsa.getError())
-                end
-            end
-        else
-            print("Could not obtain requested audio format.")
-        end
-    end
-end
--- Attempt to use SoX's synthesizer, this is safe to use.
-if not machine.beep and (not windows and os.execute("type sox")) then
-    function machine.beep(frequency, duration)
-        os.execute("play -q -n synth " .. (duration / 1000) .. " square " .. frequency .. " vol 0.3 &")
-    end
-end
-if not machine.beep then
-    function machine.beep(frequency, duration)
-        cprint("BEEP", frequency, duration)
-    end
+function machine.beep(frequency, duration)
+    cprint("BEEP", frequency, duration)
 end
 
 if not machine.sleep and elsa.SDL then
@@ -222,36 +153,8 @@ if not machine.sleep then
     function machine.sleep() end
 end
 
-if settings.emulatorDebug then
-    local filter = elsa.opts.logfilter or ""
-    cprint = function(...)
-        local args = {}
-        local filtered = filter == ""
-        for k, v in pairs(table.pack(...)) do
-            if k ~= "n" then
-                local str = tostring(v)
-                local allowedControlCodes = { "\r", "\n", "\t" }
-                if not filtered and string.find(str, filter, 1, true) then
-                    filtered = true
-                end
-                str = string.gsub(str, "[\x00-\x1F]", function(char)
-                    for _, allowed in pairs(allowedControlCodes) do
-                        if char == allowed then
-                            return char
-                        end
-                    end
-                    return string.format("\\x%x", string.byte(char))
-                end)
-                table.insert(args, str)
-            end
-        end
-        if filtered then
-            print(table.unpack(args))
-        end
-    end
-else
-    cprint = function() end
-end
+cprint = function() end
+
 
 local env = {
     _VERSION = "Lua 5.2",
@@ -450,9 +353,6 @@ elsa.filesystem.load("apis/os.lua")(env)
 elsa.filesystem.load("apis/system.lua")(env)
 elsa.filesystem.load("apis/unicode.lua")(env)
 elsa.filesystem.load("apis/userdata.lua")(env)
-if elsa.opts.debugger then
-    elsa.filesystem.load("apis/debugger.lua")(env)
-end
 elsa.filesystem.load("apis/uuid.lua")(env)
 elsa.filesystem.load("apis/component.lua")(env)
 
