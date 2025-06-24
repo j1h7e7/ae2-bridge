@@ -6,16 +6,14 @@ from typing import Generator
 import pytest
 from flask import Flask
 from flask.testing import FlaskClient
+from sqlalchemy import Engine, create_engine
+from sqlalchemy.orm import Session, sessionmaker
 
 from app.app import create_app
 from app.db import db as _db
-from common.config import CONFIG
+from common.config import get_db_url
+from common.models import BaseORM
 from sockets.app import App as SocketApp
-
-
-@pytest.fixture(scope="session", autouse=True)
-def _config():
-    CONFIG.db_url = "sqlite://"
 
 
 @pytest.fixture(scope="session")
@@ -36,6 +34,21 @@ def db(app_ctx: None):
     _db.create_all()
     yield _db
     _db.drop_all()
+
+
+@pytest.fixture(scope="session")
+def engine():
+    engine = create_engine(get_db_url())
+    import common.manifest  # noqa: F401
+
+    BaseORM.metadata.create_all(engine)
+    yield engine
+    BaseORM.metadata.drop_all(engine)
+
+
+@pytest.fixture(scope="session")
+def _sessionmaker(engine: Engine):
+    return sessionmaker(bind=engine, expire_on_commit=False)
 
 
 @pytest.fixture(scope="session")
@@ -64,3 +77,9 @@ def socket_client(socket_app: tuple[str, int]) -> Generator[socket.socket, None,
         yield soc
         soc.send(b'{"event_type":"close"}\n')
         soc.recv(1024)
+
+
+@pytest.fixture(scope="function")
+def session(_sessionmaker: sessionmaker) -> Generator[Session, None, None]:
+    with _sessionmaker() as session:
+        yield session

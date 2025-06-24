@@ -1,3 +1,4 @@
+import functools
 import inspect
 import logging
 import socket
@@ -5,9 +6,14 @@ import socketserver
 import time
 from typing import Callable, Type
 
+from sqlalchemy.orm import Session
+
+from sockets.db import sessions
 from sockets.event_types import BaseEventPayload, EventPayload
 
-CallbackType = Callable[[EventPayload], str | None]
+CallbackType = (
+    Callable[[EventPayload], str | None] | Callable[[EventPayload, Session], str | None]
+)
 
 
 logger = logging.getLogger(__name__)
@@ -66,9 +72,8 @@ class EventHandlerInstance:
         callback = self.callbacks.get(event_name, self.default_callback)
         if not callback:
             raise ValueError(f"No callback for event {event_name}")
-        output = callback(payload)
-        if output is not None:
-            self.emit(output)
+        output = callback(payload) or "ack"
+        self.emit(output)
 
     def _fill_buffer(self):
         while self.buffer.size < 10000:
@@ -97,6 +102,11 @@ class EventHandlerManager:
         event_type: type = payload_type.model_fields["event_type"].annotation
         return event_type.__args__[0]  # cursed
 
+    @staticmethod
+    def _takes_sqlalchemy_session(fn: CallbackType) -> bool:
+        argspec = inspect.getfullargspec(fn)
+        return "session" in argspec.annotations
+
     def register(
         self, arg: str | CallbackType | None = None
     ) -> Callable[[CallbackType], CallbackType]:
@@ -104,8 +114,17 @@ class EventHandlerManager:
 
         def _decorator(fn: CallbackType):
             event_name2: str = event_name or self._get_event_type(fn)
-            self.callbacks[event_name2] = fn
-            return fn
+            takes_session: bool = self._takes_sqlalchemy_session(fn)
+
+            @functools.wraps(fn)
+            def wrapper(payload: BaseEventPayload):
+                if takes_session:
+                    with sessions() as session:
+                        return fn(payload, session)
+                return fn(payload)
+
+            self.callbacks[event_name2] = wrapper
+            return wrapper
 
         if callable(arg):
             return _decorator(arg)
