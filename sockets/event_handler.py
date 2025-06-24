@@ -88,7 +88,7 @@ class EventHandlerInstance:
             while line := self.buffer.readline():
                 payload = EventPayload.model_validate_json(line)
                 self.handle_single_event(payload.root)
-            time.sleep(0.1)
+            time.sleep(0.01)
 
 
 class EventHandlerManager:

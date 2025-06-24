@@ -61,7 +61,7 @@ def socket_app():
     HOST = "localhost"
     PORT = 9999
 
-    with socketserver.ThreadingTCPServer((HOST, PORT), SocketApp) as server:
+    with socketserver.TCPServer((HOST, PORT), SocketApp) as server:
         server.daemon_threads = True
         thread = threading.Thread(target=server.serve_forever, daemon=True)
         thread.start()
@@ -74,9 +74,17 @@ def socket_client(socket_app: tuple[str, int]) -> Generator[socket.socket, None,
     HOST, PORT = socket_app
     with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as soc:
         soc.connect((HOST, PORT))
+        soc.settimeout(10)
         yield soc
-        soc.send(b'{"event_type":"close"}\n')
-        soc.recv(1024)
+
+        # close nicely
+        soc.settimeout(0.0001)
+        try:
+            soc.send(b'{"event_type":"close","src":"test"}\n')
+            soc.recv(1024)
+            soc.close()
+        except (TimeoutError, ConnectionAbortedError):
+            pass
 
 
 @pytest.fixture(scope="function")
