@@ -1,10 +1,11 @@
+import json
+import socket
 import uuid
 
 from flask.testing import FlaskClient
-from flask_socketio import SocketIOTestClient
 from flask_sqlalchemy import SQLAlchemy
 
-from app.data.models import ItemCount
+from common.models import ItemCount
 
 
 def test_db_access(db: SQLAlchemy):
@@ -23,11 +24,9 @@ def test_api_access(client: FlaskClient):
     assert resp.status_code == 404
 
 
-def test_socket(socket_client: SocketIOTestClient):
-    assert socket_client.is_connected()
-    socket_client.emit("test_event")
-    received_events = socket_client.get_received()
-
-    assert len(received_events) == 1
-    event = received_events[0]
-    assert event["name"] == "test_resp"
+def test_socket(socket_client: socket.socket):
+    socket_client.send(
+        json.dumps({"event_type": "test", "data": "hello"}).encode() + b"\n"
+    )
+    resp = socket_client.recv(1024)
+    assert resp == b"Hello\n"

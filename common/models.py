@@ -1,9 +1,9 @@
 import datetime
 
-from sqlalchemy import DateTime, Integer, Text
+from sqlalchemy import DateTime, Integer, Text, func
 from sqlalchemy.orm import Mapped, mapped_column
 
-from app.data.base import BaseORM, db
+from common.base import BaseORM
 
 
 class ItemCount(BaseORM):
@@ -21,6 +21,6 @@ class ItemCount(BaseORM):
     )
     time: Mapped[datetime.datetime] = mapped_column(
         DateTime(timezone=True),
-        server_default=db.func.now(),
+        server_default=func.now(),
         primary_key=True,
     )
