@@ -10,6 +10,7 @@ dependencies = [
     "pydantic-settings>=2.9.1",
     "sqlalchemy>=2.0.41",
     "sqlalchemy-timescaledb>=0.4.1",
+    "sqlmodel>=0.0.24",
 ]
 
 [dependency-groups]

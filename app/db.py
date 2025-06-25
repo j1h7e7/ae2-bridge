@@ -1,5 +1,4 @@
 from flask_sqlalchemy import SQLAlchemy
+from sqlmodel import SQLModel
 
-from common.base import BaseORM
-
-db: SQLAlchemy = SQLAlchemy(model_class=BaseORM)
+db: SQLAlchemy = SQLAlchemy(model_class=SQLModel)

@@ -8,11 +8,11 @@ from flask import Flask
 from flask.testing import FlaskClient
 from sqlalchemy import Engine, create_engine
 from sqlalchemy.orm import Session, sessionmaker
+from sqlmodel import SQLModel
 
 from app.app import create_app
 from app.db import db as _db
 from common.config import get_db_url
-from common.models import BaseORM
 from sockets.app import App as SocketApp
 
 
@@ -41,9 +41,9 @@ def engine():
     engine = create_engine(get_db_url())
     import common.manifest  # noqa: F401
 
-    BaseORM.metadata.create_all(engine)
+    SQLModel.metadata.create_all(engine)
     yield engine
-    BaseORM.metadata.drop_all(engine)
+    SQLModel.metadata.drop_all(engine)
 
 
 @pytest.fixture(scope="session")

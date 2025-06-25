@@ -18,3 +18,10 @@ def query():
     query = dao.item_base_query()
     counts = db.session.execute(query).scalars().all()
     return f"there are {len(counts)}"
+
+
+@main.route("/all")
+def get_all():
+    query = dao.item_base_query()
+    all_item_logs = db.session.execute(query).scalars().all()
+    return all_item_logs
