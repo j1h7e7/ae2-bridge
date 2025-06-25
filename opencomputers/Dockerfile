@@ -14,7 +14,10 @@ ADD https://github.com/MightyPirates/OpenComputers.git#:src/main/resources/asset
 ADD https://github.com/MightyPirates/OpenComputers.git#:src/main/resources/assets/opencomputers/loot /OCEmu/src/loot
 ADD https://raw.githubusercontent.com/MightyPirates/OpenComputers/refs/heads/master-MC1.7.10/src/main/resources/assets/opencomputers/font.hex /OCEmu/src
 
-ADD ./boot2.lua ./main2.lua /OCEmu/src/
+# fix an old patch from OCEmu
+RUN sed -i -e 's/nreqt.create = nil/nreqt.create = socket.tcp/' /OCEmu/src/support/http_patch.lua
+
+ADD ./boot2.lua ./main2.lua ./test.lua /OCEmu/src/
 ADD ./ocemu.cfg /root/.ocemu/
 ADD ./init.lua ./autorun.lua /OCEmu/src/loot/openos/
 

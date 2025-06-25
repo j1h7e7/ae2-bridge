@@ -1,9 +1,15 @@
 docker build -t oc .
-docker run -it oc   
+docker run -it --network="host" oc   
 lua
 dofile("boot2.lua")
-co=boot_computer()
+co=boot_machine()
 coroutine.resume(co)
 coroutine.resume(co)
 coroutine.resume(co)
 coroutine.resume(co)
+
+========
+
+docker build -t oc .
+docker run -it --network="host" oc   
+lua test.lua
