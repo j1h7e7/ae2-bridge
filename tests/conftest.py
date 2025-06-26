@@ -10,8 +10,8 @@ from sqlalchemy import Engine, create_engine
 from sqlalchemy.orm import Session, sessionmaker
 from sqlmodel import SQLModel
 
-from app.app import create_app
-from app.db import db as _db
+from api.app import create_app
+from api.db import db as _db
 from common.config import get_db_url
 from sockets.app import App as SocketApp
 
@@ -39,7 +39,6 @@ def db(app_ctx: None):
 @pytest.fixture(scope="session")
 def engine():
     engine = create_engine(get_db_url())
-    import common.manifest  # noqa: F401
 
     SQLModel.metadata.create_all(engine)
     yield engine
@@ -52,7 +51,7 @@ def _sessionmaker(engine: Engine):
 
 
 @pytest.fixture(scope="session")
-def client(flask_app: Flask) -> FlaskClient:
+def client(flask_app: Flask, db) -> FlaskClient:
     return flask_app.test_client()
 
 

@@ -1,3 +1,4 @@
+from datetime import datetime
 from typing import Any
 
 from flask.json.provider import DefaultJSONProvider
@@ -14,6 +15,8 @@ def jsonify(data: Any):
             return {k: jsonify(v) for k, v in data.items()}
         case BaseModel():
             return jsonify(data.model_dump())
+        case datetime():
+            return data.isoformat()
         case _:
             return data
 

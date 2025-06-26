@@ -7,6 +7,8 @@ from flask_sqlalchemy import SQLAlchemy
 
 from common.models import ItemCount
 
+# basic tests to make sure that very basic functionality is still there
+
 
 def test_db_access(db: SQLAlchemy):
     item_name = str(uuid.uuid4())

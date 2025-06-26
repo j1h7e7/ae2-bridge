@@ -1,11 +1,11 @@
 services:
-  flask:
+  api:
     build:
-      target: flask
+      target: api
     ports:
      - '8000:8000'
     volumes:
-     - './app:/app'
+     - './api:/api'
     extends:
       file: common_services.yaml
       service: common
