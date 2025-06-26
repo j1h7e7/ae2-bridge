@@ -1,5 +1,5 @@
 test:
-    uv run pytest
+    uv run pytest -vv
 
 lint:
     uv run ty check .

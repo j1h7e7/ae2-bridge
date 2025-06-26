@@ -2,16 +2,16 @@ from logging.config import fileConfig
 
 from alembic import context
 from sqlalchemy import engine_from_config, pool
+from sqlmodel import SQLModel
 
 import common.manifest  # noqa: F401 # loads all models
-from common.base import BaseORM
 from common.config import get_db_url
 
 config = context.config
 if config.config_file_name is not None:
     fileConfig(config.config_file_name)
 
-target_metadata = BaseORM.metadata
+target_metadata = SQLModel.metadata
 config.set_main_option("sqlalchemy.url", get_db_url())
 
 

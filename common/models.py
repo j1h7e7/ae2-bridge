@@ -1,26 +1,15 @@
 import datetime
 
-from sqlalchemy import DateTime, Integer, Text, func
-from sqlalchemy.orm import Mapped, mapped_column
-
-from common.base import BaseORM
+from sqlalchemy import TIMESTAMP, Text
+from sqlmodel import Field, SQLModel
 
 
-class ItemCount(BaseORM):
+class ItemCount(SQLModel, table=True):
     __tablename__ = "itemcount"
-
-    item_name: Mapped[str] = mapped_column(
-        Text,
-        nullable=False,
-        primary_key=True,
-    )
-    item_count: Mapped[int] = mapped_column(
-        Integer,
-        nullable=False,
-        primary_key=True,
-    )
-    time: Mapped[datetime.datetime] = mapped_column(
-        DateTime(timezone=True),
-        server_default=func.now(),
+    item_name: str = Field(sa_type=Text, primary_key=True)
+    item_count: int = Field(primary_key=True)
+    time: datetime.datetime = Field(  # ty: ignore[no-matching-overload]
+        sa_type=TIMESTAMP(timezone=True),
+        default_factory=datetime.datetime.now,
         primary_key=True,
     )

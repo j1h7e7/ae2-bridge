@@ -12,6 +12,7 @@ dependencies = [
     { name = "pydantic-settings" },
     { name = "sqlalchemy" },
     { name = "sqlalchemy-timescaledb" },
+    { name = "sqlmodel" },
 ]
 
 [package.dev-dependencies]
@@ -25,6 +26,7 @@ dev = [
 flask = [
     { name = "alembic" },
     { name = "flask" },
+    { name = "flask-pydantic-api" },
     { name = "flask-sqlalchemy" },
     { name = "gunicorn" },
 ]
@@ -39,6 +41,7 @@ requires-dist = [
     { name = "pydantic-settings", specifier = ">=2.9.1" },
     { name = "sqlalchemy", specifier = ">=2.0.41" },
     { name = "sqlalchemy-timescaledb", specifier = ">=0.4.1" },
+    { name = "sqlmodel", specifier = ">=0.0.24" },
 ]
 
 [package.metadata.requires-dev]
@@ -52,6 +55,7 @@ dev = [
 flask = [
     { name = "alembic", specifier = ">=1.16.2" },
     { name = "flask", specifier = ">=3.1.1" },
+    { name = "flask-pydantic-api", specifier = ">=1.7.0" },
     { name = "flask-sqlalchemy", specifier = ">=3.1.1" },
     { name = "gunicorn", specifier = ">=23.0.0" },
 ]
@@ -79,6 +83,18 @@ source = { registry = "https://pypi.org/simple" }
 sdist = { url = "https://files.pythonhosted.org/packages/ee/67/531ea369ba64dcff5ec9c3402f9f51bf748cec26dde048a2f973a4eea7f5/annotated_types-0.7.0.tar.gz", hash = "sha256:aff07c09a53a08bc8cfccb9c85b05f1aa9a2a6f23728d790723543408344ce89", size = 16081, upload-time = "2024-05-20T21:33:25.928Z" }
 wheels = [
     { url = "https://files.pythonhosted.org/packages/78/b6/6307fbef88d9b5ee7421e68d78a9f162e0da4900bc5f5793f6d3d0e34fb8/annotated_types-0.7.0-py3-none-any.whl", hash = "sha256:1f02e8b43a8fbbc3f3e0d4f0f4bfc8131bcb4eebe8849b8e5c773f3a1c582a53", size = 13643, upload-time = "2024-05-20T21:33:24.1Z" },
+]
+
+[[package]]
+name = "asgiref"
+version = "3.8.1"
+source = { registry = "https://pypi.org/simple" }
+dependencies = [
+    { name = "typing-extensions", marker = "python_full_version < '3.11'" },
+]
+sdist = { url = "https://files.pythonhosted.org/packages/29/38/b3395cc9ad1b56d2ddac9970bc8f4141312dbaec28bc7c218b0dfafd0f42/asgiref-3.8.1.tar.gz", hash = "sha256:c343bd80a0bec947a9860adb4c432ffa7db769836c64238fc34bdc3fec84d590", size = 35186, upload-time = "2024-03-22T14:39:36.863Z" }
+wheels = [
+    { url = "https://files.pythonhosted.org/packages/39/e3/893e8757be2612e6c266d9bb58ad2e3651524b5b40cf56761e985a28b13e/asgiref-3.8.1-py3-none-any.whl", hash = "sha256:3e1e3ecc849832fe52ccf2cb6686b7a55f82bb1d6aee72a58826471390335e47", size = 23828, upload-time = "2024-03-22T14:39:34.521Z" },
 ]
 
 [[package]]
@@ -165,6 +181,20 @@ dependencies = [
 sdist = { url = "https://files.pythonhosted.org/packages/c0/de/e47735752347f4128bcf354e0da07ef311a78244eba9e3dc1d4a5ab21a98/flask-3.1.1.tar.gz", hash = "sha256:284c7b8f2f58cb737f0cf1c30fd7eaf0ccfcde196099d24ecede3fc2005aa59e", size = 753440, upload-time = "2025-05-13T15:01:17.447Z" }
 wheels = [
     { url = "https://files.pythonhosted.org/packages/3d/68/9d4508e893976286d2ead7f8f571314af6c2037af34853a30fd769c02e9d/flask-3.1.1-py3-none-any.whl", hash = "sha256:07aae2bb5eaf77993ef57e357491839f5fd9f4dc281593a81a9e4d79a24f295c", size = 103305, upload-time = "2025-05-13T15:01:15.591Z" },
+]
+
+[[package]]
+name = "flask-pydantic-api"
+version = "1.7.0"
+source = { registry = "https://pypi.org/simple" }
+dependencies = [
+    { name = "asgiref" },
+    { name = "flask" },
+    { name = "pydantic" },
+]
+sdist = { url = "https://files.pythonhosted.org/packages/41/6f/ac2937d65b6f1bb0e8cb5ec449d8d69adf52aae2e7570adebc20d2d70607/flask_pydantic_api-1.7.0.tar.gz", hash = "sha256:e63595d04ba8b4625d6390231b737ff951c11195ff9d07177e69867818b7e1bc", size = 23813, upload-time = "2025-06-02T17:51:31.883Z" }
+wheels = [
+    { url = "https://files.pythonhosted.org/packages/ad/2d/c6f5fe60add3985dffec67545d3d3aef21805cd140a176605137d5fe7bfa/flask_pydantic_api-1.7.0-py3-none-any.whl", hash = "sha256:d0800fb40bed60272b25fe127b46ae33ff7ee1d6e4f5112907e5d6ddbf9e43d1", size = 15806, upload-time = "2025-06-02T17:51:30.421Z" },
 ]
 
 [[package]]
@@ -714,6 +744,19 @@ dependencies = [
 sdist = { url = "https://files.pythonhosted.org/packages/8e/f4/a06d88278eae468692667a1bf693212f0cb0d23cf1216d32f22cc006861a/sqlalchemy-timescaledb-0.4.1.tar.gz", hash = "sha256:43870866c6c951a71a5e83c74580574192baaf833a514eca4855ab8c48d15e0b", size = 5078, upload-time = "2023-07-03T11:15:28.763Z" }
 wheels = [
     { url = "https://files.pythonhosted.org/packages/c3/e4/2a5c5cdd2b60574547c5b61699826358e6d41005ae72caf71ff1496e36ce/sqlalchemy_timescaledb-0.4.1-py3-none-any.whl", hash = "sha256:c2111a3c8f5f141bbe34a33319926a1427dc6bd8039a2fbbca1965894a1f3416", size = 4937, upload-time = "2023-07-03T11:15:26.99Z" },
+]
+
+[[package]]
+name = "sqlmodel"
+version = "0.0.24"
+source = { registry = "https://pypi.org/simple" }
+dependencies = [
+    { name = "pydantic" },
+    { name = "sqlalchemy" },
+]
+sdist = { url = "https://files.pythonhosted.org/packages/86/4b/c2ad0496f5bdc6073d9b4cef52be9c04f2b37a5773441cc6600b1857648b/sqlmodel-0.0.24.tar.gz", hash = "sha256:cc5c7613c1a5533c9c7867e1aab2fd489a76c9e8a061984da11b4e613c182423", size = 116780, upload-time = "2025-03-07T05:43:32.887Z" }
+wheels = [
+    { url = "https://files.pythonhosted.org/packages/16/91/484cd2d05569892b7fef7f5ceab3bc89fb0f8a8c0cde1030d383dbc5449c/sqlmodel-0.0.24-py3-none-any.whl", hash = "sha256:6778852f09370908985b667d6a3ab92910d0d5ec88adcaf23dbc242715ff7193", size = 28622, upload-time = "2025-03-07T05:43:30.37Z" },
 ]
 
 [[package]]

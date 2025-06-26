@@ -6,7 +6,7 @@ RUN uv sync --no-default-groups
 
 # ===== #
 
-FROM base as flask
+FROM base as api
 
 ENV PORT=8000
 EXPOSE 8000
