@@ -1,4 +1,7 @@
+from functools import cache
+
 from pydantic_settings import BaseSettings
+from sqlalchemy import make_url
 
 
 class Config(BaseSettings):
@@ -15,3 +18,8 @@ def get_db_url():
         return CONFIG.db_url
 
     return f"postgresql+psycopg2://{CONFIG.postgres_username}:{CONFIG.postgres_password}@localhost/postgres"
+
+
+@cache
+def get_dialect():
+    return make_url(get_db_url()).get_backend_name()
