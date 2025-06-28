@@ -1,3 +1,4 @@
+import importlib
 import logging
 import socket
 import socketserver
@@ -5,8 +6,8 @@ from typing import NoReturn
 
 from keepalive import set as set_keepalive
 
+import sockets.routes
 from sockets.event_handler import EventHandlerInstance
-from sockets.routes import event_handler
 
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
@@ -19,7 +20,8 @@ class App(socketserver.BaseRequestHandler):
         logger.info("starting new connection")
         req: socket.socket = self.request
         set_keepalive(req, after_idle_sec=60 * 10)
-        self.event_handler = event_handler.new_instance(self)
+        importlib.reload(sockets.routes)
+        self.event_handler = sockets.routes.event_handler.new_instance(self)
 
     def handle(self):
         logger.info("handling connection")

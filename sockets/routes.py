@@ -1,8 +1,12 @@
+import logging
+
 from sqlalchemy.orm import Session
 
 from common.dao import create_item_count
 from sockets.event_handler import EventHandlerManager
 from sockets.event_types import ItemCountEventPayload, TestEventPayload
+
+logger = logging.getLogger(__name__)
 
 event_handler = EventHandlerManager()
 
