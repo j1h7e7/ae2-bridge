@@ -1,6 +1,6 @@
-local i = require("internet")
+local c = require("bridge/socketHandler")
 
-con = i.open("http://127.0.0.1", 9999)
+local con = c.CreateConnection("http://127.0.0.1", 9999)
 
-con:write('{"item_count":5,"item_name":"lua_item","event_type":"item_count"}\n')
-con:read()
+con.send({ item_count = 5, item_name = "lua_item", event_type = "item_count" })
+con.soc:read()
