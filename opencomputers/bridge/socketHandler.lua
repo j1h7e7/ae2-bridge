@@ -21,9 +21,14 @@ function M.CreateConnection(host, port)
     local con = {}
 
     con.soc = i.open(host, port)
+    con.soc:setTimeout(0.1)
 
     function con.send(data)
         con.soc:write(json_dump(data) .. "\n")
+    end
+
+    function con.read()
+        return con.soc:read()
     end
 
     return con

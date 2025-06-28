@@ -63,7 +63,7 @@ class EventHandlerInstance:
         self.closed = True
 
     def emit(self, data: str, /, *, newline: bool = True) -> None:
-        bytes_data = bytes(data, encoding="utf-8") + b"\n" if newline else b""
+        bytes_data = bytes(data, encoding="utf-8") + (b"\n" if newline else b"")
         self.req.send(bytes_data)
 
     def handle_single_event(self, payload: BaseEventPayload):

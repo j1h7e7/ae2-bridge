@@ -145,7 +145,11 @@ end
 boot()
 co = boot_machine()
 
+local running, err
 repeat
-    running = coroutine.resume(co)
-    socket.sleep(0.2)
+    local d = { coroutine.resume(co) }
+    running = d[1]
+    socket.sleep(0.1)
+    if d[1] and not d[2] and d[3] then err = d[3] end
 until not running
+if err and err ~= 'computer halted' then error(err) end

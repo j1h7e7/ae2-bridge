@@ -12,4 +12,4 @@ export DOCKER_CLI_HINTS := "false"
 
 oc-test:
     docker build -t oc .
-    docker run -it --rm --network="host" --volume "{{absolute_path("./bridge/")}}:/OCEmu/src/loot/openos/bridge" oc
+    docker run -it --rm --network="host" --volume "{{absolute_path("./opencomputers/bridge/")}}:/OCEmu/src/loot/openos/bridge" oc
