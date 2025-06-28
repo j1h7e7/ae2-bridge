@@ -10,16 +10,17 @@ RUN luarocks install luasec
 ADD https://github.com/zenith391/OCEmu.git /OCEmu
 RUN cd OCEmu/luaffifb && luarocks make
 
-ADD https://github.com/MightyPirates/OpenComputers.git#:src/main/resources/assets/opencomputers/lua /OCEmu/src/lua
-ADD https://github.com/MightyPirates/OpenComputers.git#:src/main/resources/assets/opencomputers/loot /OCEmu/src/loot
-ADD https://raw.githubusercontent.com/MightyPirates/OpenComputers/refs/heads/master-MC1.7.10/src/main/resources/assets/opencomputers/font.hex /OCEmu/src
+ADD https://github.com/GTNewHorizons/OpenComputers.git#:src/main/resources/assets/opencomputers/lua /OCEmu/src/lua
+ADD https://github.com/GTNewHorizons/OpenComputers.git#:src/main/resources/assets/opencomputers/loot /OCEmu/src/loot
+ADD https://raw.githubusercontent.com/GTNewHorizons/OpenComputers/refs/heads/master/src/main/resources/assets/opencomputers/font.hex /OCEmu/src
 
 # fix an old patch from OCEmu
 RUN sed -i -e 's/nreqt.create = nil/nreqt.create = socket.tcp/' /OCEmu/src/support/http_patch.lua
 
-ADD ./boot2.lua ./main2.lua ./test.lua /OCEmu/src/
+ADD ./test.lua ./setup.lua /OCEmu/src/
 ADD ./ocemu.cfg /root/.ocemu/
 ADD ./init.lua ./autorun.lua /OCEmu/src/loot/openos/
 
 WORKDIR /OCEmu/src/
-ENTRYPOINT [ "/bin/sh" ]
+ENTRYPOINT [ "/usr/local/bin/lua" ]
+CMD ["test.lua"]

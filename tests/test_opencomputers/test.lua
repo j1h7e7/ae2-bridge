@@ -8,6 +8,7 @@ local ffi = require("ffi")
 local SDL = require("sdl2.init")
 local lfs = require("lfs")
 local arg_parse = require("support.arg_parse")
+local socket = require("socket")
 
 local args, options = arg_parse(...)
 local baseDir = os.getenv("HOME") .. "/.ocemu"
@@ -138,7 +139,13 @@ function boot()
     })
 
     math.randomseed(0)
-    require("main2")
+    require("setup")
 end
 
 boot()
+co = boot_machine()
+
+repeat
+    running = coroutine.resume(co)
+    socket.sleep(0.2)
+until not running
