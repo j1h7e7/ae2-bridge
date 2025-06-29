@@ -54,6 +54,7 @@ ARG oc_dir="tests/test_opencomputers"
 ADD ${oc_dir}/utils/entrypoint.lua ${oc_dir}/utils/setup.lua /OCEmu/src/
 ADD ${oc_dir}/utils/ocemu.cfg /root/.ocemu/
 ADD ${oc_dir}/init.lua ${oc_dir}/*.lua /OCEmu/src/loot/openos/
+ADD ${oc_dir}/components/ /OCEmu/src/component/
 
 WORKDIR /OCEmu/src/
 ENTRYPOINT [ "/usr/local/bin/lua" ]
