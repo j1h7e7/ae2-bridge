@@ -1,5 +1,4 @@
 local i = require("internet")
-
 local M = {}
 
 local function json_dump(data)
@@ -17,7 +16,7 @@ local function json_dump(data)
     return "{" .. table.concat(parts, ",") .. "}"
 end
 
-function M.CreateConnection(host, port)
+function M.create_connection(host, port)
     local con = {}
 
     con.soc = i.open(host, port)

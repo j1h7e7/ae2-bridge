@@ -51,9 +51,9 @@ RUN sed -i -e 's/nreqt.create = nil/nreqt.create = socket.tcp/' /OCEmu/src/suppo
 
 ARG oc_dir="tests/test_opencomputers"
 
-ADD ${oc_dir}/entrypoint.lua ${oc_dir}/setup.lua /OCEmu/src/
-ADD ${oc_dir}/ocemu.cfg /root/.ocemu/
-ADD ${oc_dir}/init.lua ${oc_dir}/autorun.lua /OCEmu/src/loot/openos/
+ADD ${oc_dir}/utils/entrypoint.lua ${oc_dir}/utils/setup.lua /OCEmu/src/
+ADD ${oc_dir}/utils/ocemu.cfg /root/.ocemu/
+ADD ${oc_dir}/init.lua ${oc_dir}/*.lua /OCEmu/src/loot/openos/
 
 WORKDIR /OCEmu/src/
 ENTRYPOINT [ "/usr/local/bin/lua" ]
