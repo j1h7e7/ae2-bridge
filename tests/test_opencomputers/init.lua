@@ -13,4 +13,4 @@ do
     loadfile("/lib/core/boot.lua")(loadfile)
 end
 
-dofile("autorun.lua")
+dofile("test_item_count.lua")
