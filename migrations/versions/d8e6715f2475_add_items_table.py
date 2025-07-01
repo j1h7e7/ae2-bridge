@@ -37,7 +37,9 @@ def upgrade() -> None:
         ),
         sa.PrimaryKeyConstraint("uuid", TIME_COLUMN),
     )
-    op.execute(f"SELECT create_hypertable('{TABLE_NAME}', by_range('{TIME_COLUMN}'));")
+    op.execute(
+        f"SELECT create_hypertable('{TABLE_NAME}', by_range('{TIME_COLUMN}', INTERVAL '1 day'));"
+    )
     # ### end Alembic commands ###
 
 
